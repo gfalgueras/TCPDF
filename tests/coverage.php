@@ -14,9 +14,7 @@ if (extension_loaded('pcov')) {
             $coverageFile = $rootDir . 'tests/coverage.lcov';
             $covData      = \pcov\collect(
                 \pcov\exclusive,
-                array(
-                __FILE__
-                )
+                [__FILE__]
             );
             $coverageData = '';
             foreach ($covData as $file => $coverageForFile) {

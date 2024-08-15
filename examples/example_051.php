@@ -34,7 +34,8 @@ require_once('tcpdf_include.php');
 // Extend the TCPDF class to create custom Header and Footer
 class MYPDF extends TCPDF {
 	//Page header
-	public function Header() {
+	#[\Override]
+ public function Header() {
 		// get the current page break margin
 		$bMargin = $this->getBreakMargin();
 		// get current auto-page-break mode
@@ -62,7 +63,7 @@ $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
 
 // set default monospaced font
 $pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -82,8 +83,8 @@ $pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
+if (@file_exists(__DIR__.'/lang/eng.php')) {
+	require_once(__DIR__.'/lang/eng.php');
 	$pdf->setLanguageArray($l);
 }
 

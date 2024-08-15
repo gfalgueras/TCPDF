@@ -46,7 +46,7 @@ if (php_sapi_name() != 'cli') {
   exit(1);
 }
 
-$tcpdf_include_dirs = array(realpath(dirname(__FILE__).'/../tcpdf.php'), '/usr/share/php/tcpdf/tcpdf.php', '/usr/share/tcpdf/tcpdf.php', '/usr/share/php-tcpdf/tcpdf.php', '/var/www/tcpdf/tcpdf.php', '/var/www/html/tcpdf/tcpdf.php', '/usr/local/apache2/htdocs/tcpdf/tcpdf.php');
+$tcpdf_include_dirs = [realpath(__DIR__.'/../tcpdf.php'), '/usr/share/php/tcpdf/tcpdf.php', '/usr/share/tcpdf/tcpdf.php', '/usr/share/php-tcpdf/tcpdf.php', '/var/www/tcpdf/tcpdf.php', '/var/www/html/tcpdf/tcpdf.php', '/usr/local/apache2/htdocs/tcpdf/tcpdf.php'];
 foreach ($tcpdf_include_dirs as $tcpdf_include_path) {
 	if (@file_exists($tcpdf_include_path)) {
 		require_once($tcpdf_include_path);
@@ -57,7 +57,7 @@ foreach ($tcpdf_include_dirs as $tcpdf_include_path) {
 /**
  * Display help guide for this command.
  */
-function showHelp() {
+function showHelp(): never {
 	$help = <<<EOD
 tcpdf_addfont - command line tool to convert fonts for the TCPDF library.
 
@@ -134,7 +134,7 @@ if (!is_array($argv)) {
 }
 
 // initialize the array of options
-$options = array('type'=>'', 'enc'=>'', 'flags'=>32, 'outpath'=>K_PATH_FONTS, 'platid'=>3, 'encid'=>1, 'addcbbox'=>false, 'link'=>false);
+$options = ['type'=>'', 'enc'=>'', 'flags'=>32, 'outpath'=>K_PATH_FONTS, 'platid'=>3, 'encid'=>1, 'addcbbox'=>false, 'link'=>false];
 
 // short input options
 $sopt = '';
@@ -150,7 +150,7 @@ $sopt .= 'i:';
 $sopt .= 'h';
 
 // long input options
-$lopt = array();
+$lopt = [];
 $lopt[] = 'type:';
 $lopt[] = 'enc:';
 $lopt[] = 'flags:';
@@ -170,7 +170,7 @@ foreach ($inopt as $opt => $val) {
 	switch ($opt) {
 		case 't':
 		case 'type': {
-			if (in_array($val, array('TrueTypeUnicode', 'TrueType', 'Type1', 'CID0JP', 'CID0KR', 'CID0CS', 'CID0CT'))) {
+			if (in_array($val, ['TrueTypeUnicode', 'TrueType', 'Type1', 'CID0JP', 'CID0KR', 'CID0CS', 'CID0CT'])) {
 				$options['type'] = $val;
 			}
 			break;
@@ -188,7 +188,7 @@ foreach ($inopt as $opt => $val) {
 		case 'o':
 		case 'outpath': {
 			$options['outpath'] = realpath($val);
-			if (substr($options['outpath'], -1) != '/') {
+			if (!str_ends_with($options['outpath'], '/')) {
 				$options['outpath'] .= '/';
 			}
 			break;

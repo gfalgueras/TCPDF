@@ -25,14 +25,7 @@ if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
 
 require __DIR__ . '/vendor/autoload.php';
 
-$options = getopt('o:vhr:', array(
-    'group:',
-    'output-dir:',
-    'reference-dir:',
-    'stop-on-defect',
-    'verbose',
-    'help'
-));
+$options = getopt('o:vhr:', ['group:', 'output-dir:', 'reference-dir:', 'stop-on-defect', 'verbose', 'help']);
 
 function printCompareRunsHelp()
 {
@@ -114,7 +107,7 @@ $stopOnDefect = array_key_exists('stop-on-defect', $options);
 
 $verbose = array_key_exists('v', $options) || array_key_exists('verbose', $options);
 
-$groups = array();
+$groups = [];
 if (!empty($options['group'])) {
     if (is_array($options['group'])) {
         $groups = $options['group'];
@@ -153,7 +146,7 @@ $pdfinfo = getenv('PDFINFO_BINARY');
 if (empty($pdfinfo)) {
     $paths = ($isBinaryLocatorAvailable)
         ? LocateBinaries::locateInstalledBinaries('pdfinfo')
-        : array();
+        : [];
     if (empty($paths)) {
         echo 'pdfinfo could not be located.' . PHP_EOL;
         echo 'Please set the PDFINFO_BINARY environment variable.' . PHP_EOL;
@@ -168,7 +161,7 @@ $pdftopng = getenv('PDFTOPNG_BINARY');
 if (empty($pdftopng)) {
     $paths = ($isBinaryLocatorAvailable)
         ? LocateBinaries::locateInstalledBinaries('pdftopng')
-        : array();
+        : [];
     if (!empty($paths)) {
         $pdftopng = reset($paths);
     }
@@ -177,7 +170,7 @@ $pdftoppm = getenv('PDFTOPPM_BINARY');
 if (empty($pdftoppm)) {
     $paths = ($isBinaryLocatorAvailable)
         ? LocateBinaries::locateInstalledBinaries('pdftoppm')
-        : array();
+        : [];
     if (!empty($paths)) {
         $pdftoppm = reset($paths);
     }
@@ -191,11 +184,7 @@ if (empty($pdftopng) && empty($pdftoppm)) {
     exit(-1);
 }
 
-$tools = array(
-    'pdfinfo' => $pdfinfo,
-    'pdftopng' => $pdftopng,
-    'pdftoppm' => $pdftoppm,
-);
+$tools = ['pdfinfo' => $pdfinfo, 'pdftopng' => $pdftopng, 'pdftoppm' => $pdftoppm];
 $pdfTools = new PdfTools($tools, $verbose);
 echo 'pdfinfo: ' . $pdfinfo . PHP_EOL;
 echo 'pdfinfo version: ' . $pdfTools->getPdfinfoVersionInfo() . PHP_EOL;
@@ -208,7 +197,7 @@ $magick = getenv('MAGICK_BINARY');
 if (empty($magick)) {
     $paths = ($isBinaryLocatorAvailable)
         ? LocateBinaries::locateInstalledBinaries('magick')
-        : array();
+        : [];
     if (empty($paths)) {
         echo 'magick could not be located.' . PHP_EOL;
         echo 'Please set the MAGICK_BINARY environment variable.' . PHP_EOL;
@@ -257,8 +246,8 @@ $separator = '----------------------------------';
 
 $testRunner = new TestRunner($exampleDir);
 
-$differences = array();
-$ignored = array();
+$differences = [];
+$ignored = [];
 $comparisons = 0;
 $bitByBitComparisons = 0;
 
@@ -340,7 +329,7 @@ foreach ($testFiles as $file => $type) {
     // For now, just some example files are easily comparable.
     // (See the @group comparable docBlock annotation)
     $examplePHPSource = file_get_contents($exampleDir . $file);
-    if (strpos($examplePHPSource, '* @group comparable') !== false) {
+    if (str_contains($examplePHPSource, '* @group comparable')) {
         ++$bitByBitComparisons;
 
         $pngFiles1 = null;
@@ -363,8 +352,8 @@ foreach ($testFiles as $file => $type) {
         }
 
         if ('PNG' === $type) {
-            $pngFiles1 = array($outputFile1);
-            $pngFiles2 = array($outputFile2);
+            $pngFiles1 = [$outputFile1];
+            $pngFiles2 = [$outputFile2];
         }
 
         // For PDF files, we generate PNG files (one per page) with pdftopng

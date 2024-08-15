@@ -53,7 +53,7 @@ class TCPDF2DBarcode {
 	 * Array representation of barcode.
 	 * @protected
 	 */
-	protected $barcode_array = array();
+	protected $barcode_array = [];
 
 	/**
 	 * This is the class constructor.
@@ -107,7 +107,7 @@ class TCPDF2DBarcode {
 	 */
 	public function getBarcodeSVGcode($w=3, $h=3, $color='black') {
 		// replace table for special characters
-		$repstr = array("\0" => '', '&' => '&amp;', '<' => '&lt;', '>' => '&gt;');
+		$repstr = ["\0" => '', '&' => '&amp;', '<' => '&lt;', '>' => '&gt;'];
 		$svg = '<'.'?'.'xml version="1.0" standalone="no"'.'?'.'>'."\n";
 		$svg .= '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'."\n";
 		$svg .= '<svg width="'.round(($this->barcode_array['num_cols'] * $w), 3).'" height="'.round(($this->barcode_array['num_rows'] * $h), 3).'" version="1.1" xmlns="http://www.w3.org/2000/svg">'."\n";
@@ -169,7 +169,7 @@ class TCPDF2DBarcode {
 	 * @param array $color RGB (0-255) foreground color for bar elements (background is transparent).
  	 * @public
 	 */
-	public function getBarcodePNG($w=3, $h=3, $color=array(0,0,0)) {
+	public function getBarcodePNG($w=3, $h=3, $color=[0, 0, 0]) {
 		$data = $this->getBarcodePngData($w, $h, $color);
 		// send headers
 		header('Content-Type: image/png');
@@ -190,7 +190,7 @@ class TCPDF2DBarcode {
  	 * @return string|Imagick|false image or false in case of error.
  	 * @public
 	 */
-	public function getBarcodePngData($w=3, $h=3, $color=array(0,0,0)) {
+	public function getBarcodePngData($w=3, $h=3, $color=[0, 0, 0]) {
 		// calculate image size
 		$width = ($this->barcode_array['num_cols'] * $w);
 		$height = ($this->barcode_array['num_rows'] * $h);
@@ -254,14 +254,14 @@ class TCPDF2DBarcode {
 		$qrtype = strtoupper($mode[0]);
 		switch ($qrtype) {
 			case 'DATAMATRIX': { // DATAMATRIX (ISO/IEC 16022)
-				require_once(dirname(__FILE__).'/include/barcodes/datamatrix.php');
+				require_once(__DIR__.'/include/barcodes/datamatrix.php');
 				$qrcode = new Datamatrix($code);
 				$this->barcode_array = $qrcode->getBarcodeArray();
 				$this->barcode_array['code'] = $code;
 				break;
 			}
 			case 'PDF417': { // PDF417 (ISO/IEC 15438:2006)
-				require_once(dirname(__FILE__).'/include/barcodes/pdf417.php');
+				require_once(__DIR__.'/include/barcodes/pdf417.php');
 				if (!isset($mode[1]) OR ($mode[1] === '')) {
 					$aspectratio = 2; // default aspect ratio (width / height)
 				} else {
@@ -273,7 +273,7 @@ class TCPDF2DBarcode {
 					$ecl = intval($mode[2]);
 				}
 				// set macro block
-				$macro = array();
+				$macro = [];
 				if (isset($mode[3]) AND ($mode[3] !== '') AND isset($mode[4]) AND ($mode[4] !== '') AND isset($mode[5]) AND ($mode[5] !== '')) {
 					$macro['segment_total'] = intval($mode[3]);
 					$macro['segment_index'] = intval($mode[4]);
@@ -292,8 +292,8 @@ class TCPDF2DBarcode {
 				break;
 			}
 			case 'QRCODE': { // QR-CODE
-				require_once(dirname(__FILE__).'/include/barcodes/qrcode.php');
-				if (!isset($mode[1]) OR (!in_array($mode[1],array('L','M','Q','H')))) {
+				require_once(__DIR__.'/include/barcodes/qrcode.php');
+				if (!isset($mode[1]) OR (!in_array($mode[1],['L', 'M', 'Q', 'H']))) {
 					$mode[1] = 'L'; // Ddefault: Low error correction
 				}
 				$qrcode = new QRcode($code, strtoupper($mode[1]));
@@ -305,20 +305,20 @@ class TCPDF2DBarcode {
 			case 'RAW2': { // RAW MODE
 				// remove spaces
 				$code = preg_replace('/[\s]*/si', '', $code);
-				if (strlen($code) < 3) {
+				if (strlen((string) $code) < 3) {
 					break;
 				}
 				if ($qrtype == 'RAW') {
 					// comma-separated rows
-					$rows = explode(',', $code);
+					$rows = explode(',', (string) $code);
 				} else { // RAW2
 					// rows enclosed in square parentheses
-					$code = substr($code, 1, -1);
+					$code = substr((string) $code, 1, -1);
 					$rows = explode('][', $code);
 				}
 				$this->barcode_array['num_rows'] = count($rows);
 				$this->barcode_array['num_cols'] = strlen($rows[0]);
-				$this->barcode_array['bcode'] = array();
+				$this->barcode_array['bcode'] = [];
 				foreach ($rows as $r) {
 					$this->barcode_array['bcode'][] = str_split($r, 1);
 				}
@@ -328,17 +328,12 @@ class TCPDF2DBarcode {
 			case 'TEST': { // TEST MODE
 				$this->barcode_array['num_rows'] = 5;
 				$this->barcode_array['num_cols'] = 15;
-				$this->barcode_array['bcode'] = array(
-					array(1,1,1,0,1,1,1,0,1,1,1,0,1,1,1),
-					array(0,1,0,0,1,0,0,0,1,0,0,0,0,1,0),
-					array(0,1,0,0,1,1,0,0,1,1,1,0,0,1,0),
-					array(0,1,0,0,1,0,0,0,0,0,1,0,0,1,0),
-					array(0,1,0,0,1,1,1,0,1,1,1,0,0,1,0));
+				$this->barcode_array['bcode'] = [[1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1], [0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0], [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0], [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0], [0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0]];
 				$this->barcode_array['code'] = $code;
 				break;
 			}
 			default: {
-				$this->barcode_array = array();
+				$this->barcode_array = [];
 			}
 		}
 	}

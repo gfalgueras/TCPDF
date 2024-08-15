@@ -12,21 +12,6 @@ namespace Tecnickcom\TCPDF\Tests;
 class TestExecutor
 {
     /**
-     * @var PhpExecutor
-     */
-    private $phpExecutor;
-
-    /**
-     * @var string
-     */
-    private $tempDir;
-
-    /**
-     * @var string
-     */
-    private $testsDir;
-
-    /**
      * @var string
      */
     private $cliOptions = null;
@@ -37,21 +22,6 @@ class TestExecutor
     private $cliExtensionOptions = null;
 
     /**
-     * @var string[]
-     */
-    private $extensionsToLoad;
-
-    /**
-     * @var PdfTools
-     */
-    private $pdfTools;
-
-    /**
-     * @var bool
-     */
-    private $verbose;
-
-    /**
      * @param PhpExecutor $phpExecutor
      * @param array $extensionsToLoad
      * @param PdfTools $pdfTools
@@ -59,20 +29,8 @@ class TestExecutor
      * @param string $testsDir Path to this folder
      * @param bool $verbose
      */
-    public function __construct(
-        PhpExecutor $phpExecutor,
-        array $extensionsToLoad,
-        PdfTools $pdfTools,
-        $tempDir,
-        $testsDir,
-        $verbose = false
-    ) {
-        $this->phpExecutor = $phpExecutor;
-        $this->tempDir = $tempDir;
-        $this->testsDir = $testsDir;
-        $this->extensionsToLoad = $extensionsToLoad;
-        $this->pdfTools = $pdfTools;
-        $this->verbose = $verbose;
+    public function __construct(private readonly PhpExecutor $phpExecutor, private readonly array $extensionsToLoad, private readonly PdfTools $pdfTools, private $tempDir, private $testsDir, private $verbose = false)
+    {
     }
 
     /**
@@ -80,7 +38,7 @@ class TestExecutor
      */
     private function extensionsToLoad()
     {
-        $toLoad = array();
+        $toLoad = [];
         foreach ($this->extensionsToLoad as $extension) {
             // "false" means "not built-in but available"
             if ($this->phpExecutor->getExtensionStatus($extension) === false) {
@@ -101,13 +59,7 @@ class TestExecutor
         $outputFile,
         $outputFileError
     ) {
-        $exec = implode(' ', array(
-            (string)$this->phpExecutor,
-            $this->getPhpCliOptions(),
-            '-f ' . escapeshellarg($file),
-            '1> ' . escapeshellarg($outputFile),
-            '2> ' . escapeshellarg($outputFileError)
-        ));
+        $exec = implode(' ', [(string)$this->phpExecutor, $this->getPhpCliOptions(), '-f ' . escapeshellarg($file), '1> ' . escapeshellarg($outputFile), '2> ' . escapeshellarg($outputFileError)]);
         if ($this->verbose) {
             echo $exec . PHP_EOL;
         }
@@ -148,12 +100,7 @@ class TestExecutor
     ) {
         $valid = false;
 
-        $expectedHead = array(
-            'PDF' => '%PDF',
-            'PNG' => chr(0x89) . chr(0x50) . chr(0x4e) . chr(0x47),
-            'HTML' => '<div ',
-            'SVG' => '<?xml version="1.0" standalone="no"?>',
-        );
+        $expectedHead = ['PDF' => '%PDF', 'PNG' => chr(0x89) . chr(0x50) . chr(0x4e) . chr(0x47), 'HTML' => '<div ', 'SVG' => '<?xml version="1.0" standalone="no"?>'];
 
         $error = file_get_contents($outputFileError);
         $outputHead = file_get_contents($outputFile, false, null, 0, strlen($expectedHead[$type]));
@@ -206,7 +153,7 @@ class TestExecutor
     private function getPhpExtensionCliOptions()
     {
         if (null === $this->cliExtensionOptions) {
-            $extensions = array();
+            $extensions = [];
             foreach ($this->extensionsToLoad() as $extension) {
                 $extensions[] = '-d extension=' . $this->phpExecutor->makePhpExtensionFileName($extension);
             }
@@ -238,17 +185,7 @@ class TestExecutor
                 $this->testsDir . 'coverage.php'
             );
 
-            $this->cliOptions = implode(' ', array(
-                '-n',
-                '-d date.timezone=UTC',
-                '-d display_errors=on',
-                '-d error_reporting=-1',
-                '-d memory_limit=1G',
-                $includePath,
-                $extensionDir,
-                $this->getPhpExtensionCliOptions(),
-                $autoPrependFile,
-            ));
+            $this->cliOptions = implode(' ', ['-n', '-d date.timezone=UTC', '-d display_errors=on', '-d error_reporting=-1', '-d memory_limit=1G', $includePath, $extensionDir, $this->getPhpExtensionCliOptions(), $autoPrependFile]);
         }
         return $this->cliOptions;
     }

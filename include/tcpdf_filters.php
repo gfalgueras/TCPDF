@@ -54,7 +54,7 @@ class TCPDF_FILTERS {
 	 * Define a list of available filter decoders.
 	 * @private static
 	 */
-	private static $available_filters = array('ASCIIHexDecode', 'ASCII85Decode', 'LZWDecode', 'FlateDecode', 'RunLengthDecode');
+	private static $available_filters = ['ASCIIHexDecode', 'ASCII85Decode', 'LZWDecode', 'FlateDecode', 'RunLengthDecode'];
 
 // -----------------------------------------------------------------------------
 
@@ -77,52 +77,19 @@ class TCPDF_FILTERS {
 	 * @public static
 	 */
 	public static function decodeFilter($filter, $data) {
-		switch ($filter) {
-			case 'ASCIIHexDecode': {
-				return self::decodeFilterASCIIHexDecode($data);
-				break;
-			}
-			case 'ASCII85Decode': {
-				return self::decodeFilterASCII85Decode($data);
-				break;
-			}
-			case 'LZWDecode': {
-				return self::decodeFilterLZWDecode($data);
-				break;
-			}
-			case 'FlateDecode': {
-				return self::decodeFilterFlateDecode($data);
-				break;
-			}
-			case 'RunLengthDecode': {
-				return self::decodeFilterRunLengthDecode($data);
-				break;
-			}
-			case 'CCITTFaxDecode': {
-				return self::decodeFilterCCITTFaxDecode($data);
-				break;
-			}
-			case 'JBIG2Decode': {
-				return self::decodeFilterJBIG2Decode($data);
-				break;
-			}
-			case 'DCTDecode': {
-				return self::decodeFilterDCTDecode($data);
-				break;
-			}
-			case 'JPXDecode': {
-				return self::decodeFilterJPXDecode($data);
-				break;
-			}
-			case 'Crypt': {
-				return self::decodeFilterCrypt($data);
-				break;
-			}
-			default: {
-				return self::decodeFilterStandard($data);
-				break;
-			}
-		}
+		return match ($filter) {
+      'ASCIIHexDecode' => self::decodeFilterASCIIHexDecode($data),
+      'ASCII85Decode' => self::decodeFilterASCII85Decode($data),
+      'LZWDecode' => self::decodeFilterLZWDecode($data),
+      'FlateDecode' => self::decodeFilterFlateDecode($data),
+      'RunLengthDecode' => self::decodeFilterRunLengthDecode($data),
+      'CCITTFaxDecode' => self::decodeFilterCCITTFaxDecode($data),
+      'JBIG2Decode' => self::decodeFilterJBIG2Decode($data),
+      'DCTDecode' => self::decodeFilterDCTDecode($data),
+      'JPXDecode' => self::decodeFilterJPXDecode($data),
+      'Crypt' => self::decodeFilterCrypt($data),
+      default => self::decodeFilterStandard($data),
+  };
 	}
 
 	// --- FILTERS (PDF 32000-2008 - 7.4 Filters) ------------------------------
@@ -153,25 +120,25 @@ class TCPDF_FILTERS {
 		// all white-space characters shall be ignored
 		$data = preg_replace('/[\s]/', '', $data);
 		// check for EOD character: GREATER-THAN SIGN (3Eh)
-		$eod = strpos($data, '>');
+		$eod = strpos((string) $data, '>');
 		if ($eod !== false) {
 			// remove EOD and extra data (if any)
-			$data = substr($data, 0, $eod);
+			$data = substr((string) $data, 0, $eod);
 			$eod = true;
 		}
 		// get data length
-		$data_length = strlen($data);
+		$data_length = strlen((string) $data);
 		if (($data_length % 2) != 0) {
 			// odd number of hexadecimal digits
 			if ($eod) {
 				// EOD shall behave as if a 0 (zero) followed the last digit
-				$data = substr($data, 0, -1).'0'.substr($data, -1);
+				$data = substr((string) $data, 0, -1).'0'.substr((string) $data, -1);
 			} else {
 				self::Error('decodeFilterASCIIHexDecode: invalid code');
 			}
 		}
 		// check for invalid characters
-		if (preg_match('/[^a-fA-F\d]/', $data) > 0) {
+		if (preg_match('/[^a-fA-F\d]/', (string) $data) > 0) {
 			self::Error('decodeFilterASCIIHexDecode: invalid code');
 		}
 		// get one byte of binary data for each pair of ASCII hexadecimal digits
@@ -193,20 +160,20 @@ class TCPDF_FILTERS {
 		// all white-space characters shall be ignored
 		$data = preg_replace('/[\s]/', '', $data);
 		// remove start sequence 2-character sequence <~ (3Ch)(7Eh)
-		if (strpos($data, '<~') !== false) {
+		if (str_contains((string) $data, '<~')) {
 			// remove EOD and extra data (if any)
-			$data = substr($data, 2);
+			$data = substr((string) $data, 2);
 		}
 		// check for EOD: 2-character sequence ~> (7Eh)(3Eh)
-		$eod = strpos($data, '~>');
+		$eod = strpos((string) $data, '~>');
 		if ($eod !== false) {
 			// remove EOD and extra data (if any)
-			$data = substr($data, 0, $eod);
+			$data = substr((string) $data, 0, $eod);
 		}
 		// data length
-		$data_length = strlen($data);
+		$data_length = strlen((string) $data);
 		// check for invalid characters
-		if (preg_match('/[^\x21-\x75,\x74]/', $data) > 0) {
+		if (preg_match('/[^\x21-\x75,\x74]/', (string) $data) > 0) {
 			self::Error('decodeFilterASCII85Decode: invalid code');
 		}
 		// z sequence
@@ -214,7 +181,7 @@ class TCPDF_FILTERS {
 		// position inside a group of 4 bytes (0-3)
 		$group_pos = 0;
 		$tuple = 0;
-		$pow85 = array((85*85*85*85), (85*85*85), (85*85), 85, 1);
+		$pow85 = [(85*85*85*85), (85*85*85), (85*85), 85, 1];
 		$last_pos = ($data_length - 1);
 		// for each byte
 		for ($i = 0; $i < $data_length; ++$i) {
@@ -242,24 +209,13 @@ class TCPDF_FILTERS {
 			$tuple += $pow85[($group_pos - 1)];
 		}
 		// last tuple (if any)
-		switch ($group_pos) {
-			case 4: {
-				$decoded .= chr($tuple >> 24).chr($tuple >> 16).chr($tuple >> 8);
-				break;
-			}
-			case 3: {
-				$decoded .= chr($tuple >> 24).chr($tuple >> 16);
-				break;
-			}
-			case 2: {
-				$decoded .= chr($tuple >> 24);
-				break;
-			}
-			case 1: {
-				self::Error('decodeFilterASCII85Decode: invalid code');
-				break;
-			}
-		}
+		match ($group_pos) {
+      4 => $decoded .= chr($tuple >> 24).chr($tuple >> 16).chr($tuple >> 8),
+      3 => $decoded .= chr($tuple >> 24).chr($tuple >> 16),
+      2 => $decoded .= chr($tuple >> 24),
+      1 => self::Error('decodeFilterASCII85Decode: invalid code'),
+      default => $decoded,
+  };
 		return $decoded;
 	}
 
@@ -288,7 +244,7 @@ class TCPDF_FILTERS {
 		// initialize dictionary index
 		$dix = 258;
 		// initialize the dictionary (with the first 256 entries).
-		$dictionary = array();
+		$dictionary = [];
 		for ($i = 0; $i < 256; ++$i) {
 			$dictionary[$i] = chr($i);
 		}
@@ -307,7 +263,7 @@ class TCPDF_FILTERS {
 				$dix = 258;
 				$prev_index = 256;
 				// reset the dictionary (with the first 256 entries).
-				$dictionary = array();
+				$dictionary = [];
 				for ($i = 0; $i < 256; ++$i) {
 					$dictionary[$i] = chr($i);
 				}
@@ -470,7 +426,7 @@ class TCPDF_FILTERS {
 	 * @since 1.0.000 (2011-05-23)
 	 * @public static
 	 */
-	public static function Error($msg) {
+	public static function Error($msg): never {
 		throw new Exception('TCPDF_PARSER ERROR: '.$msg);
 	}
 

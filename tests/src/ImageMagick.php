@@ -20,11 +20,6 @@ class ImageMagick
     private $magick = null;
 
     /**
-     * @var bool
-     */
-    private $verbose;
-
-    /**
      * @var string
      */
     private $magickVersionInfo;
@@ -35,10 +30,9 @@ class ImageMagick
      */
     public function __construct(
         $magick,
-        $verbose = false
+        private $verbose = false
     ) {
         $this->magick = escapeshellarg($magick);
-        $this->verbose = $verbose;
     }
 
     /**
@@ -74,17 +68,9 @@ class ImageMagick
     public function areSimilar($file1, $file2)
     {
         if (null === $this->magick) {
-            throw new LogicException('No path to magick. Provide it to ' . __CLASS__ . ' PHP class constructor.');
+            throw new LogicException('No path to magick. Provide it to ' . self::class . ' PHP class constructor.');
         }
-        $exec = implode(' ', array(
-            $this->magick,
-            'compare',
-            '-metric MAE',
-            escapeshellarg($file1),
-            escapeshellarg($file2),
-            'null:',
-            ' 2>&1',
-        ));
+        $exec = implode(' ', [$this->magick, 'compare', '-metric MAE', escapeshellarg($file1), escapeshellarg($file2), 'null:', ' 2>&1']);
         if ($this->verbose) {
             echo $exec . PHP_EOL;
         }

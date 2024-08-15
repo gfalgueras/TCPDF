@@ -34,17 +34,17 @@ class TestRunner
     /**
      * @var array
      */
-    private $failed = array();
+    private $failed = [];
 
     /**
      * @var array
      */
-    private $generatedFiles = array();
+    private $generatedFiles = [];
 
     /**
      * @var array
      */
-    private $ignored = array();
+    private $ignored = [];
 
     /**
      * @var array|null
@@ -60,7 +60,7 @@ class TestRunner
     /**
      * @var array
      */
-    private $stopOn = array();
+    private $stopOn = [];
 
     /**
      * @var int|null
@@ -74,7 +74,7 @@ class TestRunner
 
     public function __construct($exampleDir)
     {
-        $this->exampleDir = rtrim($exampleDir, '/\\') . DIRECTORY_SEPARATOR;
+        $this->exampleDir = rtrim((string) $exampleDir, '/\\') . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -163,7 +163,7 @@ class TestRunner
 
         $exampleBarcodeFiles = glob('barcodes/example*.php');
 
-        $files = array();
+        $files = [];
         foreach ($exampleFiles as $exampleFile) {
             $files[$exampleFile] = 'PDF';
         }
@@ -173,7 +173,7 @@ class TestRunner
             if ('svgi' === $type) {
                 $files[$exampleFile] = 'SVG';
             } else {
-                $files[$exampleFile] = strtoupper($type);
+                $files[$exampleFile] = strtoupper((string) $type);
             }
         }
 
@@ -214,9 +214,9 @@ class TestRunner
         $outputFolder = rtrim($outputDir, '/\\') . DIRECTORY_SEPARATOR;
         chdir($this->exampleDir);
 
-        $this->failed = array();
-        $this->ignored = array();
-        $this->generatedFiles = array();
+        $this->failed = [];
+        $this->ignored = [];
+        $this->generatedFiles = [];
         $this->count = 0;
         foreach ($this->getTestFiles() as $file => $type) {
             ++$this->count;

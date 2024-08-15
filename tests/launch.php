@@ -21,13 +21,7 @@ if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$options = getopt('o:vh', array(
-    'group:',
-    'output-dir:',
-    'stop-on-defect',
-    'verbose',
-    'help'
-));
+$options = getopt('o:vh', ['group:', 'output-dir:', 'stop-on-defect', 'verbose', 'help']);
 
 function printLaunchHelp()
 {
@@ -84,14 +78,14 @@ if (array_key_exists('c', $options) || array_key_exists('clean-up', $options)) {
     $preserveOutputFiles = false;
 }
 
-$stopOn = array();
+$stopOn = [];
 if (array_key_exists('stop-on-defect', $options)) {
     $stopOn[] = 'defect';
 }
 
 $verbose = array_key_exists('v', $options) || array_key_exists('verbose', $options);
 
-$groups = array();
+$groups = [];
 if (!empty($options['group'])) {
     if (is_array($options['group'])) {
         $groups = $options['group'];
@@ -106,7 +100,7 @@ $pdfinfo = getenv('PDFINFO_BINARY');
 if (empty($pdfinfo)) {
     $paths = ($isBinaryLocatorAvailable)
         ? LocateBinaries::locateInstalledBinaries('pdfinfo')
-        : array();
+        : [];
     if (empty($paths)) {
         echo 'pdfinfo could not be located.' . PHP_EOL;
         echo 'Please set the PDFINFO_BINARY environment variable.' . PHP_EOL;
@@ -117,7 +111,7 @@ if (empty($pdfinfo)) {
     }
     $pdfinfo = reset($paths);
 }
-$pdfTools = new PdfTools(array('pdfinfo' => $pdfinfo), $verbose);
+$pdfTools = new PdfTools(['pdfinfo' => $pdfinfo], $verbose);
 echo 'pdfinfo: ' . $pdfinfo . PHP_EOL;
 echo 'pdfinfo version: ' . $pdfTools->getPdfinfoVersionInfo() . PHP_EOL;
 echo PHP_EOL;
@@ -131,7 +125,7 @@ if (empty($phpBinary)) {
     } else {
         $paths = ($isBinaryLocatorAvailable)
             ? LocateBinaries::locateInstalledBinaries('php')
-            : array();
+            : [];
         if (empty($paths)) {
             echo 'php could not be located. Please set PHP_BINARY environment variable.' . PHP_EOL;
             if (!$isBinaryLocatorAvailable) {
@@ -158,17 +152,10 @@ echo PHP_EOL;
  * - false: available,
  * - null: not available (not detected).
  */
-$phpExtensions = array(
-    'bcmath' => null,
-    'gd' => null,
-    'imagick' => null,
-    'json' => null,
-    'openssl' => null,
-    'xml' => null,
-);
+$phpExtensions = ['bcmath' => null, 'gd' => null, 'imagick' => null, 'json' => null, 'openssl' => null, 'xml' => null];
 $phpExtensionDir = $phpExecutor->getPhpExtensionDir();
 echo 'PHP extension folder: ' . $phpExtensionDir . PHP_EOL;
-if (strpos($phpExtensionDir, ' ') !== false) {
+if (str_contains($phpExtensionDir, ' ')) {
     echo "WARNING: Spaces in extension_dir might cause problems." . PHP_EOL;
     if ($isWindows) {
         echo "         You should use `dir /x` to get the short name of the path," . PHP_EOL;
@@ -244,12 +231,10 @@ $testExecutor = new TestExecutor(
 );
 
 // Files that should be excluded from the test suite
-$ignored = array(
-    'example_006.php',
-);
+$ignored = ['example_006.php'];
 
 // Check if the script is run for specific test files
-$requestedTests = array();
+$requestedTests = [];
 foreach (array_reverse($argv) as $value) {
     // This is a crude way to work around how getopt() parses arguments to script
     if (preg_match('~^(barcodes/)?example_\d[\d_a-z]+\.php$~', $value)) {

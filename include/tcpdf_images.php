@@ -58,7 +58,7 @@ class TCPDF_IMAGES {
 	 * 
 	 * @var string[]
 	 */
-	public static $svginheritprop = array('clip-rule', 'color', 'color-interpolation', 'color-interpolation-filters', 'color-profile', 'color-rendering', 'cursor', 'direction', 'display', 'fill', 'fill-opacity', 'fill-rule', 'font', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'glyph-orientation-horizontal', 'glyph-orientation-vertical', 'image-rendering', 'kerning', 'letter-spacing', 'marker', 'marker-end', 'marker-mid', 'marker-start', 'pointer-events', 'shape-rendering', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'text-anchor', 'text-rendering', 'visibility', 'word-spacing', 'writing-mode');
+	public static $svginheritprop = ['clip-rule', 'color', 'color-interpolation', 'color-interpolation-filters', 'color-profile', 'color-rendering', 'cursor', 'direction', 'display', 'fill', 'fill-opacity', 'fill-rule', 'font', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'glyph-orientation-horizontal', 'glyph-orientation-vertical', 'image-rendering', 'kerning', 'letter-spacing', 'marker', 'marker-end', 'marker-mid', 'marker-start', 'pointer-events', 'shape-rendering', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'text-anchor', 'text-rendering', 'visibility', 'word-spacing', 'writing-mode'];
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -70,10 +70,10 @@ class TCPDF_IMAGES {
 	 * @since 4.8.017 (2009-11-27)
 	 * @public static
 	 */
-	public static function getImageFileType($imgfile, $iminfo=array()) {
+	public static function getImageFileType($imgfile, $iminfo=[]) {
 		$type = '';
 		if (isset($iminfo['mime']) AND !empty($iminfo['mime'])) {
-			$mime = explode('/', $iminfo['mime']);
+			$mime = explode('/', (string) $iminfo['mime']);
 			if ((count($mime) > 1) AND ($mime[0] == 'image') AND (!empty($mime[1]))) {
 				$type = strtolower(trim($mime[1]));
 			}
@@ -97,7 +97,7 @@ class TCPDF_IMAGES {
 	 */
 	public static function setGDImageTransparency($new_image, $image) {
 		// default transparency color (white)
-		$tcol = array('red' => 255, 'green' => 255, 'blue' => 255);
+		$tcol = ['red' => 255, 'green' => 255, 'blue' => 255];
 		// transparency index
 		$tid = imagecolortransparent($image);
 		$palletsize = imagecolorstotal($image);
@@ -203,7 +203,7 @@ class TCPDF_IMAGES {
 		// get file content
 		$data = file_get_contents($file);
 		// check for embedded ICC profile
-		$icc = array();
+		$icc = [];
 		$offset = 0;
 		while (($pos = strpos($data, "ICC_PROFILE\0", $offset)) !== false) {
 			// get ICC sequence length
@@ -228,7 +228,7 @@ class TCPDF_IMAGES {
 		} else {
 			$icc = false;
 		}
-		return array('w' => $a[0], 'h' => $a[1], 'ch' => $channels, 'icc' => $icc, 'cs' => $colspace, 'bpc' => $bpc, 'f' => 'DCTDecode', 'data' => $data);
+		return ['w' => $a[0], 'h' => $a[1], 'ch' => $channels, 'icc' => $icc, 'cs' => $colspace, 'bpc' => $bpc, 'f' => 'DCTDecode', 'data' => $data];
 	}
 
 	/**
@@ -303,12 +303,12 @@ class TCPDF_IMAGES {
 				// read transparency info
 				$t = TCPDF_STATIC::rfread($f, $n);
 				if ($ct == 0) { // DeviceGray
-					$trns = array(ord($t[1]));
+					$trns = [ord($t[1])];
 				} elseif ($ct == 2) { // DeviceRGB
-					$trns = array(ord($t[1]), ord($t[3]), ord($t[5]));
+					$trns = [ord($t[1]), ord($t[3]), ord($t[5])];
 				} else { // Indexed
 					if ($n > 0) {
-						$trns = array();
+						$trns = [];
 						for ($i = 0; $i < $n; ++ $i) {
 							$trns[] = ord($t[$i]);
 						}
@@ -349,7 +349,7 @@ class TCPDF_IMAGES {
 			return false;
 		}
 		fclose($f);
-		return array('w' => $w, 'h' => $h, 'ch' => $channels, 'icc' => $icc, 'cs' => $colspace, 'bpc' => $bpc, 'f' => 'FlateDecode', 'parms' => $parms, 'pal' => $pal, 'trns' => $trns, 'data' => $data);
+		return ['w' => $w, 'h' => $h, 'ch' => $channels, 'icc' => $icc, 'cs' => $colspace, 'bpc' => $bpc, 'f' => 'FlateDecode', 'parms' => $parms, 'pal' => $pal, 'trns' => $trns, 'data' => $data];
 	}
 
 } // END OF TCPDF_IMAGES CLASS

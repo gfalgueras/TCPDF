@@ -30,11 +30,6 @@ class PdfTools
     private $pdftoppm = null;
 
     /**
-     * @var bool
-     */
-    private $verbose;
-
-    /**
      * @var string
      */
     private $pdfinfoVersionInfo;
@@ -50,7 +45,7 @@ class PdfTools
      */
     public function __construct(
         array $tools,
-        $verbose = false
+        private $verbose = false
     ) {
         if (!empty($tools['pdfinfo'])) {
             $this->pdfinfo = escapeshellarg($tools['pdfinfo']);
@@ -61,7 +56,6 @@ class PdfTools
         if (!empty($tools['pdftoppm'])) {
             $this->pdftoppm = escapeshellarg($tools['pdftoppm']);
         }
-        $this->verbose = $verbose;
     }
 
     /**
@@ -72,7 +66,7 @@ class PdfTools
     public function getPdfinfoVersionInfo()
     {
         if (null === $this->pdfinfo) {
-            throw new LogicException('No path to pdfinfo. Provide it to ' . __CLASS__ . ' PHP class constructor.');
+            throw new LogicException('No path to pdfinfo. Provide it to ' . self::class . ' PHP class constructor.');
         }
         if (null === $this->pdfinfoVersionInfo) {
             $exec = sprintf('%s -v 2>&1', $this->pdfinfo);
@@ -97,7 +91,7 @@ class PdfTools
     {
         $tool = $this->pdftopng ?: $this->pdftoppm;
         if (null === $tool) {
-            throw new LogicException('No path to pdftopng not pdftoppm. Provide it to ' . __CLASS__ . ' PHP class constructor.');
+            throw new LogicException('No path to pdftopng not pdftoppm. Provide it to ' . self::class . ' PHP class constructor.');
         }
         if (null === $this->pdftopngVersionInfo) {
             $exec = sprintf('%s -v 2>&1', $tool);
@@ -121,12 +115,9 @@ class PdfTools
     public function isPdf($file)
     {
         if (null === $this->pdfinfo) {
-            throw new LogicException('No path to pdfinfo. Provide it to ' . __CLASS__ . ' PHP class constructor.');
+            throw new LogicException('No path to pdfinfo. Provide it to ' . self::class . ' PHP class constructor.');
         }
-        $exec = implode(' ', array(
-            $this->pdfinfo,
-            escapeshellarg($file)
-        ));
+        $exec = implode(' ', [$this->pdfinfo, escapeshellarg($file)]);
         if ($this->verbose) {
             echo $exec . PHP_EOL;
         }
@@ -170,15 +161,10 @@ class PdfTools
             $tool = $this->pdftoppm . ' -png';
         }
         if (!isset($tool)) {
-            throw new LogicException('No path to pdftopng nor pdftoppm. Provide it to ' . __CLASS__ . ' PHP class constructor.');
+            throw new LogicException('No path to pdftopng nor pdftoppm. Provide it to ' . self::class . ' PHP class constructor.');
         }
         $this->ensureFolder(dirname($pngRoot));
-        $exec = implode(' ', array(
-            $tool,
-            escapeshellarg($file),
-            escapeshellarg($pngRoot),
-            ' 2>&1',
-        ));
+        $exec = implode(' ', [$tool, escapeshellarg($file), escapeshellarg($pngRoot), ' 2>&1']);
         if ($this->verbose) {
             echo $exec . PHP_EOL;
         }

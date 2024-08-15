@@ -1,5 +1,5 @@
 {
-    "name": "tecnickcom/tcpdf",
+    "name": "escio/tcpdf",
     "type": "library",
     "description": "TCPDF is a PHP class for generating PDF documents and barcodes.",
     "keywords": [
@@ -22,8 +22,9 @@
         }
     ],
     "require": {
-        "php": ">=5.5.0"
+        "php": "^8.3"
     },
+    "minimum-stability": "stable",
     "autoload": {
         "classmap": [
             "config",

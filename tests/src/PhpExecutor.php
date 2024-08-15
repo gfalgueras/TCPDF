@@ -11,7 +11,7 @@ namespace Tecnickcom\TCPDF\Tests;
 
 use RuntimeException;
 
-class PhpExecutor
+class PhpExecutor implements \Stringable
 {
     /**
      * @var string PHP executable as a shell argument
@@ -36,29 +36,24 @@ class PhpExecutor
     /**
      * @var bool[]
      */
-    private $builtInExtensions = array();
+    private $builtInExtensions = [];
 
     /**
      * @var mixed[]
      */
-    private $extensionStatuses = array();
-
-    /**
-     * @var bool
-     */
-    private $verbose;
+    private $extensionStatuses = [];
 
     /**
      * @param string $php Path to PHP executable
      * @param bool $verbose
      */
-    public function __construct($php, $verbose = false)
+    public function __construct($php, private $verbose = false)
     {
         $this->phpShell = escapeshellarg($php);
-        $this->verbose = $verbose;
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return $this->phpShell;
     }
@@ -164,11 +159,11 @@ class PhpExecutor
             // if ($this->getPhpVersion() < 50400) {
             //     $path = str_replace('\\', '/', $path);
             // }
-            if (strpos($path, '~') !== false) {
+            if (str_contains($path, '~')) {
                 return "'" . $path . "'";
             }
         }
-        if (strpos($path, ' ') !== false) {
+        if (str_contains($path, ' ')) {
             return "'" . $path . "'";
         }
         return escapeshellarg((string)$path);
@@ -185,11 +180,11 @@ class PhpExecutor
                 $path = str_replace('\\', '/', $path);
                 return "'" . $path . "'";
             }
-            if (strpos($path, '~') !== false) {
+            if (str_contains($path, '~')) {
                 return "'" . $path . "'";
             }
         }
-        if (strpos($path, ' ') !== false) {
+        if (str_contains($path, ' ')) {
             return "'" . $path . "'";
         }
         return (string)$path;
@@ -202,15 +197,10 @@ class PhpExecutor
      */
     public function makeCliOption($name, $value)
     {
-        switch ($name) {
-            case 'auto_prepend_file':
-            case 'extension_dir':
-            case 'include_path':
-                $arg = $this->escapePathForCliOption($value);
-                break;
-            default:
-                $arg = escapeshellarg($value);
-        }
+        $arg = match ($name) {
+            'auto_prepend_file', 'extension_dir', 'include_path' => $this->escapePathForCliOption($value),
+            default => escapeshellarg($value),
+        };
 
         return sprintf('-d %s=%s', $name, $arg);
     }

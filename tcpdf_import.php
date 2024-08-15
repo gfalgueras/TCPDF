@@ -43,9 +43,9 @@
  */
 
 // include the TCPDF class
-require_once(dirname(__FILE__).'/tcpdf.php');
+require_once(__DIR__.'/tcpdf.php');
 // include PDF parser class
-require_once(dirname(__FILE__).'/tcpdf_parser.php');
+require_once(__DIR__.'/tcpdf_parser.php');
 
 /**
  * @class TCPDF_IMPORT
@@ -72,11 +72,7 @@ class TCPDF_IMPORT extends TCPDF {
 			$this->Error('Unable to get the content of the file: '.$filename);
 		}
 		// configuration parameters for parser
-		$cfg = array(
-			'die_for_errors' => false,
-			'ignore_filter_decoding_errors' => true,
-			'ignore_missing_filter_decoders' => true,
-		);
+		$cfg = ['die_for_errors' => false, 'ignore_filter_decoding_errors' => true, 'ignore_missing_filter_decoders' => true];
 		try {
 			// parse PDF data
 			$pdf = new TCPDF_PARSER($rawdata, $cfg);

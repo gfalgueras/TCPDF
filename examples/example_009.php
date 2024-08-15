@@ -43,8 +43,8 @@ $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 $pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 009', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -61,8 +61,8 @@ $pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
+if (@file_exists(__DIR__.'/lang/eng.php')) {
+	require_once(__DIR__.'/lang/eng.php');
 	$pdf->setLanguageArray($l);
 }
 
@@ -94,8 +94,8 @@ $pdf->Image('images/image_demo.jpg', 15, 140, 75, 113, 'JPG', 'http://www.tcpdf.
 
 // test fitbox with all alignment combinations
 
-$horizontal_alignments = array('L', 'C', 'R');
-$vertical_alignments = array('T', 'M', 'B');
+$horizontal_alignments = ['L', 'C', 'R'];
+$vertical_alignments = ['T', 'M', 'B'];
 
 $x = 15;
 $y = 35;
@@ -107,7 +107,7 @@ for ($i = 0; $i < 3; ++$i) {
 	$x = 15;
 	for ($j = 0; $j < 3; ++$j) {
 		$fitbox[1] = $vertical_alignments[$j];
-		$pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,128));
+		$pdf->Rect($x, $y, $w, $h, 'F', [], [128, 255, 128]);
 		$pdf->Image('images/image_demo.jpg', $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
 		$x += 32; // new column
 	}
@@ -123,7 +123,7 @@ for ($i = 0; $i < 3; ++$i) {
 	$x = 115;
 	for ($j = 0; $j < 3; ++$j) {
 		$fitbox[1] = $vertical_alignments[$j];
-		$pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,255));
+		$pdf->Rect($x, $y, $w, $h, 'F', [], [128, 255, 255]);
 		$pdf->Image('images/image_demo.jpg', $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
 		$x += 27; // new column
 	}

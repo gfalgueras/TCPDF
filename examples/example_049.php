@@ -43,8 +43,8 @@ $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 $pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 049', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -61,8 +61,8 @@ $pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
+if (@file_exists(__DIR__.'/lang/eng.php')) {
+	require_once(__DIR__.'/lang/eng.php');
 	$pdf->setLanguageArray($l);
 }
 
@@ -94,19 +94,19 @@ Please use this feature only if you are in control of the HTML content and you a
 This feature is disabled by default by the <b>K_TCPDF_CALLS_IN_HTML</b> constant on TCPDF configuration file.</span>
 <h2>write1DBarcode method in HTML</h2>';
 
-$data = $pdf->serializeTCPDFtag('write1DBarcode', array('CODE 39', 'C39', '', '', 80, 30, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
+$data = $pdf->serializeTCPDFtag('write1DBarcode', ['CODE 39', 'C39', '', '', 80, 30, 0.4, ['position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>[0, 0, 0], 'bgcolor'=>[255, 255, 255], 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4], 'N']);
 $html .= '<tcpdf data="'.$data.'" />';
 
-$data = $pdf->serializeTCPDFtag('write1DBarcode', array('CODE 128', 'C128', '', '', 80, 30, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
+$data = $pdf->serializeTCPDFtag('write1DBarcode', ['CODE 128', 'C128', '', '', 80, 30, 0.4, ['position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>[0, 0, 0], 'bgcolor'=>[255, 255, 255], 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4], 'N']);
 $html .= '<tcpdf data="'.$data.'" />';
 
 $data = $pdf->serializeTCPDFtag('AddPage');
 $html .= '<tcpdf data="'.$data.'" /><h2>Graphic Functions</h2>';
 
-$data = $pdf->serializeTCPDFtag('SetDrawColor', array(0));
+$data = $pdf->serializeTCPDFtag('SetDrawColor', [0]);
 $html .= '<tcpdf data="'.$data.'" />';
 
-$data = $pdf->serializeTCPDFtag('Rect', array(50, 50, 40, 10, 'DF', array(), array(0,128,255)));
+$data = $pdf->serializeTCPDFtag('Rect', [50, 50, 40, 10, 'DF', [], [0, 128, 255]]);
 $html .= '<tcpdf data="'.$data.'" />';
 
 
